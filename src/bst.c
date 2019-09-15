@@ -3,7 +3,7 @@
 
 struct bst_obj {
 	struct bst_obj *lft, *rit;
-	void *val, *key;
+	void *val;
 };
 
 struct bst {
@@ -11,11 +11,10 @@ struct bst {
 	cmp_fun_t cmp;
 };
 
-struct bst_obj *bst_obj_alc(void *key, void *val) {
+struct bst_obj *bst_obj_alc(void *val) {
 	struct bst_obj *obj = mem_alc(sizeof(struct bst_obj));
-	obj->lft = NULL;
-	obj->rit = NULL;
-	obj->key = key;
+	obj->lft = 0;
+	obj->rit = 0;
 	obj->val = val;
 	return obj;
 }
@@ -23,26 +22,26 @@ struct bst_obj *bst_obj_alc(void *key, void *val) {
 struct bst *bst_alc(cmp_fun_t cmp) {
 	struct bst *bst = mem_alc(sizeof(struct bst));
 	bst->cmp = cmp;
-	bst->root= NULL;
+	bst->root= 0;
 	return bst;
 }
 
-void bst_ins(struct bst *bst, void *key, void *val) {
+void bst_ins(struct bst *bst, void *val) {
 	struct bst_obj **obj = &bst->root;
-	while (*obj) switch (bst->cmp((*obj)->key, key)) {
-	case cmp_lss: obj = &(*obj)->lft; break;
-	case cmp_grt: obj = &(*obj)->rit; break;
-	case cmp_eql: (*obj)->val = val; return;
+	while (*obj) switch (bst->cmp((*obj)->val, val)) {
+	case cmp_lesser: obj = &(*obj)->lft; break;
+	case cmp_greater: obj = &(*obj)->rit; break;
+	case cmp_equal: (*obj)->val = val; return;
 	}
-	*obj = bst_obj_alc(key, val);
+	*obj = bst_obj_alc(val);
 }
 
-void bst_del(struct bst *bst, void *key) {
+void bst_del(struct bst *bst, void *val) {
 	struct bst_obj **obj = &bst->root;
-	while (*obj) switch (bst->cmp((*obj)->key, key)) {
-	case cmp_lss: obj = &(*obj)->lft; break;
-	case cmp_grt: obj = &(*obj)->rit; break;
-	case cmp_eql: {
+	while (*obj) switch (bst->cmp((*obj)->val, val)) {
+	case cmp_lesser: obj = &(*obj)->lft; break;
+	case cmp_greater: obj = &(*obj)->rit; break;
+	case cmp_equal: {
 		// TODO
 		// you IDIOT!
 		// write node deletion algorithm
@@ -54,12 +53,12 @@ void bst_del(struct bst *bst, void *key) {
 	
 }
 
-typedef int (*bst_blk_fun_t)(void *, void *, void *);
+typedef int (*bst_blk_fun_t)(void *, void *);
 
 void bst_obj_for(struct bst_obj *obj, register bst_blk_fun_t blk, void *arg) {
 	if (obj) {
 		bst_obj_for(obj->lft, blk, arg);
-		blk(obj->val, obj->key, arg);
+		blk(obj->val, arg);
 		bst_obj_for(obj->rit, blk, arg);
 	}
 }

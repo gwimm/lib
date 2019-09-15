@@ -1,20 +1,41 @@
-#define SYS_READ    0
-#define SYS_WRITE   1
-#define SYS_OPEN    2
-#define SYS_CLOSE   3
-#define SYS_BRK    12
-#define SYS_EXIT   60
+#include "prc.h"
 
-wrd_t syscall(wrd_t rax, wrd_t rdi, wrd_t rsi, wrd_t rdx) {
-        asm volatile ("syscall" : "+a"(rax) : "D"(rdi), "S"(rsi), "d"(rdx));
-        return rax;
+inline u64 __syscall0(u64 rax) {
+        asm volatile (
+	"syscall"
+	: "+a" (rax)
+	:
+	: "rcx", "r11", "memory"
+	);
+	return rax;
 }
-void exit(wrd_t val) {
-        (void)syscall(SYS_EXIT, val, 0, 0);
+
+inline u64 __syscall1(u64 rax, u64 rdi) {
+        asm volatile (
+	"syscall"
+	: "+a"(rax)
+	: "D" (rdi)
+	: "rcx", "r11", "memory"
+	);
+	return rax;
 }
-void fdc_wrt(unsigned fdc, const char *buf, wrd_t len) {
-        (void)syscall(SYS_WRITE, fdc, (wrd_t)buf, len);
+
+inline u64 __syscall2(u64 rax, u64 rdi, u64 rsi) {
+        asm volatile (
+	"syscall"
+	: "+a"(rax)
+	: "D" (rdi), "S" (rsi)
+	: "rcx", "r11", "memory"
+	);
+	return rax;
 }
-void *brk(void *brk) {
-        return (void *)syscall(SYS_BRK, (wrd_t)brk, 0, 0);
+
+inline u64 __syscall3(u64 rax, u64 rdi, u64 rsi, u64 rdx) {
+        asm volatile (
+	"syscall"
+	: "+a"(rax)
+	: "D" (rdi), "S" (rsi), "d" (rdx)
+	: "rcx", "r11", "memory"
+	);
+	return rax;
 }

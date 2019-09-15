@@ -9,12 +9,12 @@ clean)
 	rm -r bin
 	;;
 asm) 
-	clang -nostdlib -ffreestanding -nostdinc -S -o 'start.s' 'src/ini.c'
-	nvim start.s
+	clang -nostdlib -ffreestanding -S -o 'bin/start.s' 'src/ini.c'
+	nvim bin/start.s
 	;;
 run)
 	mkdir -p bin
-	clang -nostdlib -ffreestanding -o bin/main src/ini.c
+	clang -nostdlib -ffreestanding -O3 -o bin/main src/ini.c
 	./bin/main arg1 arg2 arg3
 	;;
 pp)
