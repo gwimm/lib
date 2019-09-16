@@ -1,5 +1,6 @@
 #include "bst.h"
 #include "mem.h"
+#include "alc.h"
 
 struct bst_obj {
 	struct bst_obj *lft, *rit;

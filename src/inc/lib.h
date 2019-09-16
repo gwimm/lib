@@ -18,5 +18,4 @@ typedef char           i8;
 typedef enum cmp { cmp_lesser = -1, cmp_equal, cmp_greater } cmp_t;
 typedef _Bool bool;
 
-#include "lib.c"
 #endif // LIB_H

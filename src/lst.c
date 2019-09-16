@@ -1,6 +1,4 @@
 struct lst_obj {
 	void *val;
-	struct lst_obj *prv, nxt;
-}
-
-
+	struct lst_obj *prv, *nxt;
+};

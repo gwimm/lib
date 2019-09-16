@@ -1,6 +1,7 @@
 #include "str.h"
 #include "mem.h"
-#include "prc_map.h"
+#include "sys.h"
+#include "alc.h"
 #include "stdarg.h"
 
 void str_cpy(i8 *dst, const i8 *src) {
@@ -55,7 +56,7 @@ void stream_fmt_print(struct stream *stream, const i8 *fmt, va_list ap) {
 			case 'b': {
 				u64 num = va_arg(ap, u64);
 				len = sizeof num * 8 + 2;
-				mem_cpy(buf, "0b", 2);
+				mem_move(buf, "0b", 2);
 				buf += len;
 				for (u64 i = 0; i < sizeof num * 8; i++, num >>= 1) {
 					*--buf = num & 1 ? '1' : '0';
@@ -65,7 +66,7 @@ void stream_fmt_print(struct stream *stream, const i8 *fmt, va_list ap) {
 			case 'x': {
 				u64 num = va_arg(ap, u64);
 				len = sizeof num * 2 + 2;
-				mem_cpy(buf, "0x", 2);
+				mem_move(buf, "0x", 2);
 				buf += len;
 				for (u64 i = 0; i < sizeof num * 2; i++, num >>= 4) {
 					*--buf = "0123456789ABCDEF"[num & 0xF];
@@ -84,7 +85,7 @@ void stream_fmt_print(struct stream *stream, const i8 *fmt, va_list ap) {
 }
 
 void str_write(struct stream *buf, const u8 *str, u64 len) {
-	mem_cpy(buf->cookie, str, len);
+	mem_move(buf->cookie, str, len);
 	buf->cookie += len;
 }
 

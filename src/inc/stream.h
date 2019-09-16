@@ -9,5 +9,6 @@ struct stream {
         void *cookie;
 };
 
-#include "stream.c"
+inline void stream_str_write(struct stream *stream, const i8 *str);
+
 #endif // STREAM_H

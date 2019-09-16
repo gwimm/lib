@@ -1,12 +1,3 @@
-#include "lib.h"
-#include "sys.h"
-#include "prc_map.h"
-#include "mem.h"
-#include "str.h"
-#include "stream.h"
-#include "alc.h"
-#include "bst.h"
-
 u64 ini();
 
 asm (

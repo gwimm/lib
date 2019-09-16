@@ -1,16 +1,7 @@
 #include "fs.h"
 #include "stream.h"
 #include "alc.h"
-
-struct file {
-	i32 fd;
-	u8 *buf;
-	u64 buf_len;
-};
-
-#define O_RDONLY             00
-#define O_WRONLY             01
-#define O_RDWR               02
+#include "sys.h"
 
 void fs_write(struct stream *file, const u8 *str, u64 len) {
 	syscall(WRITE, ((struct file *)file->cookie)->fd, (u64)str, len);

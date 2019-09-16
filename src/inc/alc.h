@@ -5,5 +5,7 @@
 
 #define mem_alc_local __builtin_alloca
 
-#include "alc.c"
+void *mem_alc(u64);
+void mem_dlc(void *);
+
 #endif // ALC_H

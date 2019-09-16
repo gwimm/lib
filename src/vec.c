@@ -12,10 +12,10 @@ struct vec *vec_alc(u64 siz, u64 len) {
 }
 
 void vec_dlc(struct vec **vec) {
-	mem_dlc(&(*vec)->buf)
-	mem_dlc(vec)
+	mem_dlc(&(*vec)->buf);
+	mem_dlc(vec);
 }
 
 void *vec_get(struct vec *vec, u64 idx) {
-	return idx < len ? vec->buf + idx * vec->siz : 0;
+	return idx < vec->len ? vec->buf + idx * vec->siz : 0;
 }

@@ -1,6 +1,8 @@
 #ifndef   SYS_H
 #define   SYS_H
 
+#include "prc.h"
+
 // corrosponds to the 4.2 linux kernel
 
 enum syscalls {
@@ -121,5 +123,44 @@ enum syscalls {
 #define __SYS_IND(n) PRC_CAT(__syscall, n)
 #define syscall(...) __SYS_IND(PRC_NUM_ARG(__VA_ARGS__))(SYS_ ## __VA_ARGS__)
 
-#include "sys.c"
+inline u64 __syscall0(u64 rax) {
+        asm volatile (
+	"syscall"
+	: "+a" (rax)
+	:
+	: "rcx", "r11", "memory"
+	);
+	return rax;
+}
+
+inline u64 __syscall1(u64 rax, u64 rdi) {
+        asm volatile (
+	"syscall"
+	: "+a"(rax)
+	: "D" (rdi)
+	: "rcx", "r11", "memory"
+	);
+	return rax;
+}
+
+inline u64 __syscall2(u64 rax, u64 rdi, u64 rsi) {
+        asm volatile (
+	"syscall"
+	: "+a"(rax)
+	: "D" (rdi), "S" (rsi)
+	: "rcx", "r11", "memory"
+	);
+	return rax;
+}
+
+inline u64 __syscall3(u64 rax, u64 rdi, u64 rsi, u64 rdx) {
+        asm volatile (
+	"syscall"
+	: "+a"(rax)
+	: "D" (rdi), "S" (rsi), "d" (rdx)
+	: "rcx", "r11", "memory"
+	);
+	return rax;
+}
+
 #endif // SYS_H

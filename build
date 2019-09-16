@@ -1,25 +1,25 @@
 #!/bin/bash
 
+compiler_opts="-I src/inc -include src/inc/lib.h -nostdlib -ffreestanding"
+
+location() { echo "$1"; mkdir -p "${1%/*}"; }
+
+compile() {
+	loc="${2%.*}"
+	loc="$1/${loc##*/}.o"
+	clang $compiler_opts -c $2 -o "$(location $loc)"
+	echo $loc
+}
+
+build() {
+	echo "bin/main"
+	for f in src/*.c
+		{ obj_list+=" $(compile "bin/obj" $f)"; }
+	clang $compiler_opts $obj_list -o "$(location bin/main)"
+}
+
 case "$1" in
-all|"")
-	mkdir -p bin
-	clang  -nostdlib -ffreestanding -o bin/main src/start.c
-	;;
-clean) 
-	rm -r bin
-	;;
-asm) 
-	clang -nostdlib -ffreestanding -S -o 'bin/start.s' 'src/ini.c'
-	nvim bin/start.s
-	;;
-run)
-	mkdir -p bin
-	clang -nostdlib -ffreestanding -O3 -o bin/main src/ini.c
-	./bin/main arg1 arg2 arg3
-	;;
-pp)
-	mkdir -p bin
-	clang -nostdlib -ffreestanding -E -o start.c src/start.c
-	nvim start.c
-	;;
+all|"") echo $(build) ;;
+run) 	$($0) ;;
+clean)  rm -r bin src/*.c.o ;;
 esac
