@@ -1,7 +1,14 @@
-void mem_move(void *dst, const void *src, u64 len) {
-        const u8 *s = src;
-        u8 *d = dst;
-        while (len--) *d++ = *s++;
+void *mem_move(void *dst, const void *src, u64 len) {
+        const u8 *s;
+        u8 *d;
+	if (dst != src) {
+ 		s = src;
+		d = dst;
+        	while (len--) {
+			*d++ = *s++;
+		}
+	}
+	return dst;
 }
 
 void mem_swap(void *mem1, void *mem2, u64 len) {
@@ -13,13 +20,17 @@ void mem_swap(void *mem1, void *mem2, u64 len) {
 	}
 }
 
-enum cmp mem_cmp(const void *vl, const void *vr, u64 n) {
-        const u8 *l=vl, *r=vr;
-        while (n-- && *l++ == *r++);
-        return n ? (*l-*r < 0 ? cmp_lesser : cmp_greater) : cmp_equal;
+void *mem_set(void *dst, u8 c, u64 len) {
+	u8 *d = dst;
+	for (; len; len--) *d = c;
+	return d;
 }
 
-typedef enum cmp (*cmp_fun_t)(const void *, const void *);
+enum cmp mem_cmp(const void *vl, const void *vr, u64 n) {
+        const u8 *l=vl, *r=vr;
+        for (; n-- && *l == *r; l++, r++);
+        return n ? (*l-*r < 0 ? cmp_lesser : cmp_greater) : cmp_equal;
+}
 
 void srt(void *arr, u64 len, u64 siz, cmp_fun_t cmp_fun) {
 	char *cur[siz - 1];

@@ -1,5 +1,8 @@
 #ifndef   FLT_H
 #define   FLT_H
+#ifdef    __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 struct flt_obj {
 	struct flt_obj *prv, *nxt;
@@ -20,4 +23,7 @@ struct flt_obj *flt_get(struct flt *flt, u64 len);
 void flt_del(struct flt *flt, struct flt_obj *obj);
 void flt_ext(struct flt *flt, u64 len);
 
+#ifdef    __cplusplus
+}
+#endif // __cplusplus
 #endif // FLT_H

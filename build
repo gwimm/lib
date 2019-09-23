@@ -1,25 +1,56 @@
 #!/bin/bash
 
-compiler_opts="-I src/inc -include src/inc/lib.h -nostdlib -ffreestanding"
+shopt -s nullglob 
 
-location() { echo "$1"; mkdir -p "${1%/*}"; }
+: ${CC:=clang}
+
+ARCH='x86_64'
+AS_OPTS='-nostdlib'
+CC_OPTS='-nostdlib -I inc -include inc/lib.h -ffreestanding'
+
+location() {
+	echo "$1"
+	mkdir -p "${1%/*}"
+}
 
 compile() {
 	loc="${2%.*}"
 	loc="$1/${loc##*/}.o"
-	clang $compiler_opts -c $2 -o "$(location $loc)"
+	$CC $CC_OPTS -c $2 -o "$(location $loc)"
+	echo $loc
+}
+
+assemble() {
+	loc="${2%.*}"
+	loc="$1/${loc##*/}.o"
+	$CC $AS_OPTS -c $2 -o "$(location $loc)"
 	echo $loc
 }
 
 build() {
-	echo "bin/main"
-	for f in src/*.c
-		{ obj_list+=" $(compile "bin/obj" $f)"; }
-	clang $compiler_opts $obj_list -o "$(location bin/main)"
+	for f in src/*/*.s; { echo " $(assemble $1 $f)"; }
+	for f in src/*/$ARCH/*.s; { echo " $(assemble $1 $f)"; }
+	for f in src/*/*.c; { echo " $(compile $1 $f)"; }
+	for f in src/*/$ARCH/*.c; { echo " $(compile $1 $f)"; }
 }
 
-case "$1" in
-all|"") echo $(build) ;;
-run) 	$($0) ;;
-clean)  rm -r bin src/*.c.o ;;
-esac
+build_lib() {
+	ar rvs "${1}/lib.a" $(build "${1}/obj") >/dev/null
+	echo "${1}/lib.a"
+}
+
+build_bin() {
+	$CC $CC_OPTS tmp/ini.c $(build_lib 'bin') -o "$(location bin/main)"
+	echo "bin/main"
+}
+
+ini() {
+	case "$1" in
+	all|"") build_bin 'bin';;
+	lib)	build_lib 'bin';;
+	run) 	$($0) --ow something ;;
+	clean)  rm -r bin ;;
+	esac
+}
+
+ini $1

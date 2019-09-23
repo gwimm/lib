@@ -1,4 +1,4 @@
-#include "alc.h"
+#include <alloc.h>
 
 struct vec {
 	void *buf;

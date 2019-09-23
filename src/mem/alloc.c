@@ -1,6 +1,6 @@
-#include "alc.h"
-#include "flt.h"
-#include "sys.h"
+#include <alloc.h>
+#include <flt.h>
+#include <sys.h>
 
 struct flt mem_hep = {0};
 void *mem_hep_upp = 0;

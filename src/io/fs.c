@@ -1,14 +1,14 @@
-#include "fs.h"
-#include "stream.h"
-#include "alc.h"
-#include "sys.h"
+#include <fs.h>
+#include <stream.h>
+#include <alloc.h>
+#include <sys.h>
 
-void fs_write(struct stream *file, const u8 *str, u64 len) {
-	syscall(WRITE, ((struct file *)file->cookie)->fd, (u64)str, len);
+u64 fs_write(struct stream *file, const u8 *buf, u64 len) {
+	return syscall(WRITE, ((struct file *)file->cookie)->fd, (u64)buf, len);
 }
 
-void fs_read(struct stream *file, u8 *str, u64 len) {
-	syscall(READ, ((struct file *)file->cookie)->fd, (u64)str, len);
+u64 fs_read(struct stream *file, u8 *buf, u64 len) {
+	return syscall(READ, ((struct file *)file->cookie)->fd, (u64)buf, len);
 }
 
 struct stream *fs_open(i8 *filename, i32 flags) {

@@ -1,5 +1,8 @@
 #ifndef   SYS_H
 #define   SYS_H
+#ifdef    __cplusplus
+extern "C" {
+#endif // __cplusplus
 
 #include "prc.h"
 
@@ -121,7 +124,9 @@ enum syscalls {
 };
 
 #define __SYS_IND(n) PRC_CAT(__syscall, n)
+#define __SYS_CAST(x) ((u64)(x))
 #define syscall(...) __SYS_IND(PRC_NUM_ARG(__VA_ARGS__))(SYS_ ## __VA_ARGS__)
+// #define syscall(...) __SYS_IND(PRC_NUM_ARG(__VA_ARGS__))(SYS_ ## PRC_FIRST(__VA_ARGS__), PRC_MAP(SYS_CAST, PRC_REST(__VA_ARGS__)))
 
 inline u64 __syscall0(u64 rax) {
         asm volatile (
@@ -163,4 +168,7 @@ inline u64 __syscall3(u64 rax, u64 rdi, u64 rsi, u64 rdx) {
 	return rax;
 }
 
+#ifdef    __cplusplus
+}
+#endif // __cplusplus
 #endif // SYS_H
