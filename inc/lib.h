@@ -4,6 +4,9 @@
 extern "C" {
 #endif // __cplusplus
 
+#define f_alias(old, new) \
+        extern typeof(old) new __attribute__((weak, alias(#old)))
+
 #define inline inline __attribute__((always_inline))
 
 #define true  1

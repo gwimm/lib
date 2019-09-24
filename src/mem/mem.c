@@ -1,3 +1,6 @@
+#include <mem.h>
+
+f_alias(mem_move, memcpy);
 void *mem_move(void *dst, const void *src, u64 len) {
         const u8 *s;
         u8 *d;
@@ -11,6 +14,13 @@ void *mem_move(void *dst, const void *src, u64 len) {
 	return dst;
 }
 
+f_alias(mem_set, memset);
+void *mem_set(void *dst, u8 c, u64 len) {
+	u8 *d = dst;
+	for (; len; len--, d++) *d = c;
+	return dst;
+}
+
 void mem_swap(void *mem1, void *mem2, u64 len) {
         u8 *m1 = mem1, *m2 = mem2, tmp[len];
 	for (u64 i = len; i--;)  {
@@ -18,12 +28,6 @@ void mem_swap(void *mem1, void *mem2, u64 len) {
 		m2 [i] = m1 [i];
 		m1 [i] = tmp[i];
 	}
-}
-
-void *mem_set(void *dst, u8 c, u64 len) {
-	u8 *d = dst;
-	for (; len; len--) *d = c;
-	return d;
 }
 
 enum cmp mem_cmp(const void *vl, const void *vr, u64 n) {

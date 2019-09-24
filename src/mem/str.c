@@ -1,4 +1,6 @@
+#include <mem.h>
 #include <str.h>
+#include <wstr.h>
 
 i8 *str_cpy(i8 *dst, const i8 *src) {
         while ((*dst++ = *src++));
@@ -18,10 +20,10 @@ i8 str_cmpn(const i8 *l, const i8 *r, u64 n) {
 	return 0;
 }
 
-u64 str_len(const i8 *buf) {
-        const i8 *ptr = buf;
-        while (*ptr++);
-        return ptr - buf;
+u64 str_len(const i8 *str) {
+        const i8 *end;
+        for (end = str; *end; end++);
+        return end - str;
 }
 
 i8 *str_cat(i8 *dst, const i8 *src) {
@@ -48,4 +50,30 @@ i64 str_num(const i8 *str) {
         }
         while (*str) num = 10 * num - (*str++ - '0');
 	return neg ? num : -num;
+}
+
+static u64 str_write(struct stream *buf, const u8 *str, u64 len) {
+        mem_move(buf->cookie, str, str[len - 1] ? len : --len);
+        buf->cookie += len;
+	return len;
+}
+
+i8 *str_fmt(i8 *buf, const i8 *fmt, ...) {
+        struct stream stream = {
+                .write = str_write,
+                .cookie = buf,
+        };
+
+        va_list ap;
+        va_start(ap, fmt);
+        stream_fmt_print(&stream, fmt, ap);
+        va_end(ap);
+
+        return buf;
+}
+
+u64 wstr_len(const i32 *str) {
+	const i32 *end;
+	for (end = str; *end; end++);
+	return end - str;
 }

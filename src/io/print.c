@@ -6,8 +6,8 @@
 #include <sys.h>
 #include <stdarg.h>
 
-void chr_print(i8 c)    { syscall(WRITE, 1, (u64)&c, 1); }
-void str_print(i8 *str) { syscall(WRITE, 1, (u64)str, str_len(str)); }
+u64 chr_print(i8 c)    { return syscall(WRITE, 1, (u64)&c, 1); }
+u64 str_print(i8 *str) { return syscall(WRITE, 1, (u64)str, str_len(str)); }
 
 i8 chr_read(void) {
 	i8 c;
@@ -29,23 +29,32 @@ u64 stream_write(struct stream *stream, const i8 *str, u64 len) {
 	return stream ? stream->write(stream, (void *)str, len) : -1;
 }
 
-static i8 *fmt_b(u64 num, i8 *buf) {
+inline i8 *fmt_b(u64 num, i8 *buf) {
 	for (; num; num >>= 1) *--buf = num & 1 ? '1' : '0';
 	return buf;
 }
 
-static i8 *fmt_x(u64 num, i8 *buf) {
+inline i8 *fmt_x(u64 num, i8 *buf) {
 	for (; num; num >>= 4) *--buf = "0123456789abcdef"[num & 0x0F];
 	return buf;
 }
 
-static i8 *fmt_o(u64 num, i8 *buf) {
+inline i8 *fmt_o(u64 num, i8 *buf) {
 	for (; num; num >>= 3) *--buf = '0' + (num & 07);
 	return buf;
 }
 
-static i8 *fmt_d(u64 num, i8 *buf) {
+inline i8 *fmt_d(u64 num, i8 *buf) {
 	for (; num; num /= 10) *--buf = '0' + num % 10;
+	return buf;
+}
+
+inline i8 *fmt_f(f80 num, i8 *buf) {
+	return buf;
+}
+
+inline i8 *fmt_num(u64 num, i8 *buf, u64 base) {
+	for (; num; num /= base) *--buf = "0123456789abcdefghijklmnopqrstuvwxyz"[num % base];
 	return buf;
 }
 
@@ -98,26 +107,6 @@ u64 stream_fmt_print(struct stream *stream, const i8 *fmt, va_list ap) {
 		ret += len;
         }
 	return ret;
-}
-
-u64 str_write(struct stream *buf, const u8 *str, u64 len) {
-        mem_move(buf->cookie, str, str[len - 1] ? len : --len);
-        buf->cookie += len;
-	return len;
-}
-
-i8 *str_fmt(i8 *buf, const i8 *fmt, ...) {
-        struct stream stream = {
-                .write = str_write,
-                .cookie = buf,
-        };
-
-        va_list ap;
-        va_start(ap, fmt);
-        stream_fmt_print(&stream, fmt, ap);
-        va_end(ap);
-
-        return buf;
 }
 
 u64 fmt_print(const i8 *fmt, ...) {

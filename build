@@ -6,7 +6,7 @@ shopt -s nullglob
 
 ARCH='x86_64'
 AS_OPTS='-nostdlib'
-CC_OPTS='-nostdlib -I inc -include inc/lib.h -ffreestanding'
+CC_OPTS="-nostdlib -I inc -I arch/$ARCH -include inc/lib.h -ffreestanding"
 
 location() {
 	echo "$1"
